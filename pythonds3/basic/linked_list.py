@@ -164,7 +164,14 @@ class OrderedList(LinkedList):
         # NOTE: This is an exercise
         ...
 
-    def search(self, value: Any) -> bool:
+    def search(self, item: Any)-> bool:
         """Search for a node with a specific value"""
-        # NOTE: This is an exercise
-        ...
+        current = self.head
+        while current is not None:
+            if current.data == item:
+                return True
+            if current.data > item:
+                return False
+            current = current.next
+
+        return False
