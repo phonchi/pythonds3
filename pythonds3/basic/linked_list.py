@@ -164,13 +164,13 @@ class OrderedList(LinkedList):
         # NOTE: This is an exercise
         ...
 
-    def search(self, item: Any)-> bool:
+    def search(self, value: Any)-> bool:
         """Search for a node with a specific value"""
-        current = self.head
+        current = self._head
         while current is not None:
-            if current.data == item:
+            if current.data == value:
                 return True
-            if current.data > item:
+            if current.data > value:
                 return False
             current = current.next
 
