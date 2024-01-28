@@ -1,89 +1,88 @@
 #include <iostream>
 using namespace std;
 
-//creates a node class
+// Template for Node class
+// Template for Node class
+template <typename T>
 class Node {
-    //defines data, and next as a pointer.
     private:
-        int data; //data in the beginning node
-        Node *next; //pointer to the next node
+        T data; // Data of generic type
+        Node<T> *next; // Pointer to the next node
 
     public:
-        Node(int initdata) {
-                data = initdata; //the initialized data is set as the head
-                next = NULL; //the next node is set as NULL, as there is no next node yet.
+        Node(T initdata) {
+            data = initdata;
+            next = NULL;
         }
 
-        int getData() { //function that return data of a given node.
-                return data;
+        T getData() const{
+            return data;
         }
 
-        Node *getNext() { // pointer that gets the next node
-                return next;
+        Node<T> *getNext() const{
+            return next;
         }
 
-        void setData(int newData) { // sets data in node
-                data = newData;
+        void setData(T newData) {
+            data = newData;
         }
 
-        void setNext(Node *newnext) {
-                next = newnext;
+        void setNext(Node<T> *newnext) {
+            next = newnext;
         }
 };
 
- // creates unorderedlist that points to the head of the linked list
+// Template for UnorderedList class
+template <typename T>
 class UnorderedList {
+    private:
+        Node<T> *head;
+
     public:
-            Node *head;
+        UnorderedList() {
+            head = NULL;
+        }
 
-            UnorderedList() { // makes the head node equal to null
-                    head = NULL;
-            }
+        Node<T>* getHead() const{
+            return head;
+        }
 
-        bool isEmpty() { // the head node is empty if it is null
+        bool isEmpty() const{
             return head == NULL;
         }
 
-        void add(int item) { //cerates a "temp" pointer that adds the new node to the head of the list
-            Node *temp = new Node(item);
+        void add(T item) {
+            Node<T> *temp = new Node<T>(item);
             temp->setNext(head);
             head = temp;
         }
 
-        int size() { //cereates a "current" pointer that iterates through the list until it reaches null
-            Node *current = head;
+        int size() const{
+            Node<T> *current = head;
             int count = 0;
             while (current != NULL) {
                 count++;
                 current = current->getNext();
             }
-
             return count;
         }
 
-        // creates "current" pointer that iterates through the list
-        // untli it finds the item being searched for, and returns a boolean value
-
-        bool search(int item) {
-            Node *current = head;
+        bool search(T item) const{
+            Node<T> *current = head;
             while (current != NULL) {
                 if (current->getData() == item) {
                     return true;
-                } else {
-                    current = current->getNext();
                 }
+                current = current->getNext();
             }
             return false;
         }
 
-        // uses current and previous pointer to iterate through the lists
-        // finds the items that is searched for, and removes it
-
-        void remove(int item) {
-            Node *current = head;
-            Node *previous = NULL;
+        void remove(T item) {
+            Node<T> *current = head;
+            Node<T> *previous = NULL;
             bool found = false;
-            while (!found) {
+            while (!found && current != NULL) {
                 if (current->getData() == item) {
                     found = true;
                 } else {
@@ -91,102 +90,89 @@ class UnorderedList {
                     current = current->getNext();
                 }
             }
-            if (previous == NULL) {
-                head = current->getNext();
-            } else {
-                previous->setNext(current->getNext());
+            if (found) {
+                if (previous == NULL) {
+                    head = current->getNext();
+                } else {
+                    previous->setNext(current->getNext());
+                }
+                delete current;
             }
         }
 
-        friend ostream& operator<<(ostream& os, const UnorderedList& ol);
+        friend ostream& operator<<(ostream& os, const UnorderedList<T>& ol) {
+            Node<T> *current = ol.head;
+            while (current != NULL) {
+                os << current->getData() << " ";
+                current = current->getNext();
+            }
+            return os;
+        }
 };
 
+// Template for OrderedList class
+template <typename T>
 class OrderedList {
+    private:
+        Node<T> *head;
+
     public:
-            Node *head; //The first Node of the linked list.
-
         OrderedList() {
-                head = NULL;
+            head = NULL;
         }
 
-        bool search(int item) {
-            //finds a Node that contains item in the linked list.
-            Node *current = head;
-            bool found = false;
-            bool stop = false;
-            while (current != NULL && !found && !stop) {
-                //iterates through the entire list until item is found.
+        Node<T>* getHead() const{
+            return head;
+        }
+
+        bool search(T item) const{
+            Node<T> *current = head;
+            while (current != NULL) {
                 if (current->getData() == item) {
-                    found = true;
-                } else {
-                    if (current->getData() > item) {
-                        stop = true;
-                    } else {
-                        current = current->getNext();
-                    }
+                    return true;
+                } else if (current->getData() > item) {
+                    return false;
                 }
+                current = current->getNext();
             }
-
-            return found;
+            return false;
         }
 
-        void add(int item) {
-            if (head == NULL) {
-                Node *newNode = new Node(item);
+        void add(T item) {
+            Node<T> *newNode = new Node<T>(item);
+            if (head == NULL || head->getData() >= item) {
+                newNode->setNext(head);
                 head = newNode;
             } else {
-                Node *current = head;
-                Node *previous = NULL;
-                bool stop = false;
-                while (current != NULL && !stop) {
-                    if (current->getData() > item) { //if the data of the current Node is greater than item:
-                        stop = true;
-                    } else {
-                        previous = current;
-                        current = current->getNext();
-                    }
+                Node<T> *current = head;
+                while (current->getNext() != NULL && current->getNext()->getData() < item) {
+                    current = current->getNext();
                 }
-                Node *temp = new Node(item);
-                if (previous == NULL) {
-                    //sets the current head as temp's next item,
-                    //sets temp as the new head.
-                    temp->setNext(head);
-                    head = temp;
-                } else {
-                    //sets the current Node as temp's next Node,
-                    //sets temp to previous's next Node.
-                    temp->setNext(current);
-                    previous->setNext(temp);
-                }
+                newNode->setNext(current->getNext());
+                current->setNext(newNode);
             }
         }
 
-        bool isEmpty() {
-            //Returns true if the head is NULL.
+        bool isEmpty() const{
             return head == NULL;
         }
 
-        int size() {
-            //returns the length of the linked list.
-            Node *current = head;
+        int size() const{
+            Node<T> *current = head;
             int count = 0;
             while (current != NULL) {
                 count++;
                 current = current->getNext();
             }
-
             return count;
         }
 
-        friend ostream& operator<<(ostream& os, const OrderedList& ol);
+        friend ostream& operator<<(ostream& os, const OrderedList<T>& ol) {
+            Node<T> *current = ol.head;
+            while (current != NULL) {
+                os << current->getData() << " ";
+                current = current->getNext();
+            }
+            return os;
+        }
 };
-
-ostream& operator<<(ostream& os, const UnorderedList& ol) {
-    Node *current = ol.head;
-    while (current != NULL) {
-        os<<current->getData()<<endl;
-        current = current->getNext();
-    }
-    return os;
-}
-
