@@ -84,7 +84,7 @@ class LinkedList(ABC):
     @abstractmethod
     def remove(self, value):
         """Remove a node with a specific value"""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def search(self, value: Any) -> bool:
@@ -162,7 +162,7 @@ class OrderedList(LinkedList):
     def remove(self, value: Any) -> None:
         """Remove a node with a specific value"""
         # NOTE: This is an exercise
-        ...
+        raise NotImplementedError
 
     def search(self, value: Any)-> bool:
         """Search for a node with a specific value"""
@@ -175,3 +175,64 @@ class OrderedList(LinkedList):
             current = current.next
 
         return False
+        
+class DoublyLinkedListNode:
+    """A node in a doubly linked list"""
+
+    def __init__(self, data=None, prev=None, next=None):
+        self.data = data
+        self.prev = prev
+        self.next = next
+
+    def __repr__(self):
+        return f"DoublyLinkedListNode({self.data})"
+
+
+class DoublyLinkedList:
+    """Doubly Linked List implementation with header and trailer nodes"""
+
+    def __init__(self):
+        self.header = DoublyLinkedListNode()
+        self.trailer = DoublyLinkedListNode()
+        self.header.next = self.trailer
+        self.trailer.prev = self.header
+        self.size = 0
+
+    def __len__(self):
+        return self.size
+
+    def is_empty(self):
+        return self.size == 0
+
+    def add_first(self, data):
+        self.insert_between(data, self.header, self.header.next)
+
+    def add_last(self, data):
+        self.insert_between(data, self.trailer.prev, self.trailer)
+
+    def insert_between(self, data, predecessor, successor):
+        new_node = DoublyLinkedListNode(data, predecessor, successor)
+        predecessor.next = new_node
+        successor.prev = new_node
+        self.size += 1
+
+    def delete_node(self, node):
+        predecessor = node.prev
+        successor = node.next
+        predecessor.next = successor
+        successor.prev = predecessor
+        self.size -= 1
+        data = node.data
+        node.prev = node.next = node.data = None  # Help garbage collection
+        return data
+
+    def __iter__(self):
+        current = self.header.next
+        while current is not self.trailer:
+            yield current.data
+            current = current.next
+
+    def __repr__(self):
+        values = [str(node) for node in self]
+        return " <-> ".join(values)
+
