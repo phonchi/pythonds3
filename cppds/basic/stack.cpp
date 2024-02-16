@@ -1,92 +1,89 @@
-// Modify from https://github.com/skjha1/Data-Structure-Algorithm-Programs/blob/master/Stack/01%20Operation%20on%20stack%20c%2B%2B%20.cpp
-
 #include <iostream>
 using namespace std;
 
+template<typename T>
 class Stack {
-private: // Structure for stack!
-    int size; // size of the stack
-    int top; // this will decide the situation of the stack 
-    int* S; // stack Pointer to create dynamically 
+private:
+    int size;
+    int top;
+    T* S; // Use template type for the stack elements
+
 public:
-    Stack(int size); // Creating a parametrized constructor by class name by passing the size of the stack 
-    ~Stack(); // Destructor to remove from memory 
-    void push(int x); // delaclartion of push function i.e for inserting an element at the top of stack
-    int pop(); // declaration for the pop i.e deleting the topmost element
-    int peek(int index); // declaration of peek, knowing the element at particular index 
-    int isFull(); // declaration of isfull, this will check either the stack is full or not
-    int isEmpty(); // declaration of isempty this will check either stack is empty or not
-    void display(); // declaration of Display for displaying the stack 
-    int stackTop(); // declaration of the stacktop for checking the topmost element present in the stack 
+    Stack(int size);
+    ~Stack();
+    void push(T x);
+    T pop();
+    T peek(int index) const;
+    bool isFull() const;
+    bool isEmpty() const;
+    void display() const;
+    T stackTop() const;
 };
 
-Stack::Stack(int size) { // this will create the size of the stack 
-    this->size = size; // this is used bcz we have same name parameter so assigning this function size to the private class size 
-    top = -1; // intially set top of the stack as -1;
-    S = new int[size]; // dynamically creating the size of the stack in heap memory 
+template<typename T>
+Stack<T>::Stack(int size) {
+    this->size = size;
+    top = -1;
+    S = new T[size]; // Dynamically allocate array of template type
 }
 
-Stack::~Stack() {
-    delete[] S; // after using free the memory from heap 
+template<typename T>
+Stack<T>::~Stack() {
+    delete[] S;
 }
 
-void Stack::push(int x) { // this function is for inserting element at the top of stack 
-    if (isFull()) { // checking the condition if stack is full then we can't insert further any elements 
-        cout << "Stack Overflow!" << endl; // so print a message that stack is full 
-    }
-    else { // if stack is not full the 
-        top++; // increment top 
-        S[top] = x; // and push the element to stack 
+template<typename T>
+void Stack<T>::push(T x) {
+    if (isFull()) {
+        cout << "Stack Overflow!" << endl;
+    } else {
+        S[++top] = x;
     }
 }
 
-int Stack::pop() {// deleting the element from the stack 
-    int x = 1; // initially setting x as one 
-    if (isEmpty()) { // checking the stack either it is empty if empty there is no meaning for deletion of the element 
-        cout << "Stack Underflow!" << endl; 
+template<typename T>
+T Stack<T>::pop() {
+    if (isEmpty()) {
+        cout << "Stack Underflow!" << endl;
+        return T(); // Return default-constructed value for type T
+    } else {
+        return S[top--];
     }
-    else {
-        x = S[top]; // take out the element and then decrement the size of the stack
-        top--; // decreament the size of the stack 
-    }
-    return x;
 }
 
-int Stack::peek(int index) { // taking out the element from a particular index 
-    int x = -1;
-    if (top - index + 1 < 0 || top - index + 1 == size) { // 1st of all check either the stack index is valid or not; it should be greater then 0 and less the size
-        cout << "Invalid position!" << endl; // if is does not shows a proper index then print invalid index 
+template<typename T>
+T Stack<T>::peek(int index) const {
+    if (index < 0 || index > top) {
+        cout << "Invalid position!" << endl;
+        return T(); // Return default-constructed value for type T
+    } else {
+        return S[top - index];
     }
-    else {
-        x = S[top - index + 1]; // and if the index is valid then take out the element 
-    }
-    return x; // and return it 
 }
 
-int Stack::isFull() { // checking either a stack is full
-    if (top == size - 1) { // if the top 
-        return 1;
-    }
-    return 0;
+template<typename T>
+bool Stack<T>::isFull() const {
+    return top == size - 1;
 }
 
-int Stack::isEmpty() {
-    if (top == -1) {
-        return 1;
-    }
-    return 0;
+template<typename T>
+bool Stack<T>::isEmpty() const {
+    return top == -1;
 }
 
-void Stack::display() { // since stack is lifo consider it as verticle cane of ball and taking elements at time 
+template<typename T>
+void Stack<T>::display() const {
     for (int i = top; i >= 0; i--) {
-        cout << S[i] << " | " << flush;
+        cout << S[i] << " | ";
     }
     cout << endl;
 }
 
-int Stack::stackTop() {
-    if (isEmpty()) {
-        return -1;
+template<typename T>
+T Stack<T>::stackTop() const {
+    if (!isEmpty()) {
+        return S[top];
+    } else {
+        return T(); // Return default-constructed value for type T
     }
-    return S[top];
 }
