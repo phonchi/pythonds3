@@ -3,7 +3,7 @@
 pythonds3 import statement
 """
 
-from pythonds3.basic import Stack, Queue, Deque
+from pythonds3.basic import Stack, Queue, Deque, OrderedList, UnorderedList
 from pythonds3.graphs import Graph, Vertex
 from pythonds3.searching import HashTable
 from pythonds3.trees import (
