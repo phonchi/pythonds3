@@ -1,60 +1,47 @@
-#include<iostream>
-#include<stdlib.h>
-using namespace std;
+#include <iostream>
 
-class Queue
-{
+template<typename T>
+class Queue {
 private:
-    int front; // front is used for deletion 
-    int rear; // rear is used for insertion
-    int size; // size of the queue 
-    int* Q; // dynamically allocated space for queue 
+    int front;
+    int rear;
+    int size;
+    T* Q; // Queue now holds generic type T
+
 public:
-    Queue()                                    //Non-parameterized constructor //front and rear are assigned as -1 //indicates Queue is empty
-    {
-        front = rear = -1;
-        size = 10;                            //Default size of the Queue will be 10
-        Q = new int[size];                    //Memory is allocated for the Queue in the HEAP
+    Queue(int size = 10) : front(-1), rear(-1), size(size) {
+        Q = new T[this->size];
     }
-    Queue(int size)                            //Parameterized constructor with size as the parameter
-    {
-        front = rear = -1;
-        this->size = size;
-        Q = new int[this->size];
+
+    ~Queue() {
+        delete[] Q;
     }
-    void enqueue(int x); // declaration for insertion element in the queue 
-    int dequeue(); // declaration for deletion of the element queue 
-    void display(); // declaration for displaying the queue 
+
+    void enqueue(T x) {
+        if (rear == size - 1) {
+            std::cout << "Queue is Full" << std::endl;
+        } else {
+            Q[++rear] = x;
+        }
+    }
+
+    T dequeue() {
+        T x = nullptr;  // Adjusted for generic type, nullptr for pointer types
+        if (front == rear) {
+            std::cout << "Queue is Empty" << std::endl;
+        } else {
+            x = Q[++front];
+        }
+        return x;
+    }
+
+    bool isEmpty() {
+        return front == rear;
+    }
+
+    void display() {
+        for (int i = front + 1; i <= rear; i++)
+            std::cout << Q[i] << " ";
+        std::cout << std::endl;
+    }
 };
-
-void Queue::enqueue(int x) // passing the value as parameter for insertion 
-{
-    if (rear == size - 1)  // condition for checking queuefull 
-        cout << "Queue is Full" << endl;
-    else
-    {
-        rear++; // increament the rear and then insert the value in the queue
-        Q[rear] = x; // insertion of the element.
-    }
-}
-
-int Queue::dequeue()
-{
-    int x = -1; // initially set the value of the x to -1; setting 
-    if (front == rear) // condition for cheking the queue empty 
-        cout << "Queue is Empty" << endl;
-    else
-    {
-        front++; // increment the front and take out the element 
-        x = Q[front];
-    }
-    return x; // return the deleted value 
-}
-
-void Queue::display()
-{
-    int i;
-    for (i = front + 1; i <= rear; i++)
-        cout << Q[i] << " ";
-    cout << endl;
-}

@@ -2,48 +2,58 @@
 #include <iostream>
 #include <utility>      //std::pair
 #include <algorithm>    //std::find
-#include <map>
+#include <list>         //std::list
+#include <map>          //std::map
 #include <string>
 #include <vector>
+#include <limits>
 using namespace std;
+
 
 class Vertex {
 public:
-      string id;
-      map<string, float> connectedTo;
+    string id;
+    map<string, float> connectedTo;
+    string color;  // "white", "gray", "black"
+    Vertex* previous;  // Pointer to previous Vertex in path
+    int discovery_time;
+    int closing_time;
+    int distance;  // Distance from the source or initial vertex
 
-      Vertex() {
-      }
+    // Default constructor
+    Vertex() : id(""), color("white"), previous(nullptr), discovery_time(0), closing_time(0), distance(numeric_limits<int>::max()) {}
 
-      Vertex(string key) {
-              id = key;
-      }
+    // Constructor with string key
+    Vertex(string key) : id(key), color("white"), previous(nullptr), discovery_time(0), closing_time(0), distance(numeric_limits<int>::max()) {}
 
-      void addNeighbor(string nbr, float weight = 1) {
-              connectedTo[nbr] = weight;
-      }
+    void addNeighbor(string nbr, float weight = 1) {
+        connectedTo[nbr] = weight;
+    }
 
-      vector<string> getConnections() {
-              vector<string> keys;
-              // Use of iterator to find all keys
-              for (map<string, float>::iterator it = connectedTo.begin();
-                       it != connectedTo.end();
-                       ++it) {
-                      keys.push_back(it->first);
-              }
-              return keys;
-      }
+    vector<string> getConnections() const {
+        vector<string> keys;
+        for (auto it = connectedTo.begin(); it != connectedTo.end(); ++it) {
+            keys.push_back(it->first);
+        }
+        return keys;
+    }
 
-      string getId() {
-              return id;
-      }
+    string getId() const {
+        return id;
+    }
 
-      float getWeight(string nbr) {
-              return connectedTo[nbr];
-      }
+    float getWeight(const string& nbr) const {
+        return connectedTo.at(nbr);
+    }
 
-      friend ostream &operator<<(ostream &, Vertex &);
+    string to_string() const {
+        string prev_id = (previous ? previous->id : "None");
+        string distance_str = (distance == numeric_limits<int>::max()) ? "inf" : std::to_string(distance);
+        return id + " | " + color + " | " + distance_str + " | " +
+               std::to_string(discovery_time) + " | " + std::to_string(closing_time) + " | " + prev_id;
+    }
 };
+
 
 ostream &operator<<(ostream &stream, Vertex &vert) {
       vector<string> connects = vert.getConnections();
@@ -60,6 +70,7 @@ public:
       map<string, Vertex> vertList;
       int numVertices;
       bool directional;
+      int time = 0;
 
       Graph(bool directed = true) {
               directional = directed;
@@ -73,19 +84,14 @@ public:
               return newVertex;
       }
 
-      Vertex *getVertex(string n) {
-              for (map<string, Vertex>::iterator it = vertList.begin();
-                       it != vertList.end();
-                       ++it) {
-                      if (it->first == n) {
-                              // Forced to use pntr due to possibility of returning NULL
-                              Vertex *vpntr = &vertList[n];
-                              return vpntr;
-                      } else {
-                              return NULL;
-                      }
-              }
+      Vertex* getVertex(const string& n) {
+        auto it = vertList.find(n);
+        if (it != vertList.end()) {
+                return &it->second;
+        }
+        return nullptr; // Return null if vertex not found
       }
+
 
       bool contains(string n) {
               for (map<string, Vertex>::iterator it = vertList.begin();
