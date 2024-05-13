@@ -1,104 +1,122 @@
 #include <iostream>
 #include <vector>
-using namespace std;
+#include <stdexcept> // for std::underflow_error
 
-// uses a vector to creat a Binar Heap
-class BinHeap{
-
+template<typename T>
+class BinHeap {
 private:
-    vector<int> heapvector;
+    std::vector<T> heapvector;
     int currentSize;
 
-public:
-    // initializes the vector and an attribute currentSize
-    // as 0 to allow for interger division.
-    BinHeap(vector<int> heapvector){
-        this->heapvector = heapvector;
-        this->currentSize = 0;
-    }
-
-    // prelocates and item as far up in the
-    // tree as possible to maintain
-    // the Heap property
-    void percUp(int i){
-        while ((i / 2) > 0){
-            if (this->heapvector[i] < this->heapvector[i/2]){
-                int tmp = this->heapvector[i/2];
-                this->heapvector[i/2] = this->heapvector[i];
-                this->heapvector[i] = tmp;
+    void percUp(int i) {
+        while (i / 2 > 0) {
+            int parent = i / 2;
+            if (heapvector[i] < heapvector[parent]) {
+                std::swap(heapvector[i], heapvector[parent]);
             }
-            i = i/2;
+            i = parent;
         }
-
     }
 
-    // appends item to the end of the vector
-    void insert(int k){
-        this->heapvector.push_back(k);
-        this->currentSize = this->currentSize + 1;
-        this->percUp(this->currentSize);
-    }
-
-    // prelocates and item as far up in the
-    // tree as possible to maintain
-    // the Heap property
-    void percDown(int i){
-        while ((i*2) <= this->currentSize){
-            int mc = this->minChild(i);
-            if (this->heapvector[i] > this->heapvector[mc]){
-                int tmp = this->heapvector[i];
-                this->heapvector[i] = this->heapvector[mc];
-                this->heapvector[mc] = tmp;
+    void percDown(int i) {
+        while (i * 2 <= currentSize) {
+            int mc = minChild(i);
+            if (heapvector[i] > heapvector[mc]) {
+                std::swap(heapvector[i], heapvector[mc]);
             }
             i = mc;
         }
     }
 
-    int minChild(int i){
-        if (((i*2)+1) > this->currentSize){
+    int minChild(int i) const {
+        if (i * 2 + 1 > currentSize) {
             return i * 2;
+        } else {
+            return heapvector[i * 2] < heapvector[i * 2 + 1] ? i * 2 : i * 2 + 1;
         }
-        else{
-            if (this->heapvector[i*2] < this->heapvector[(i*2)+1]){
-                return i * 2;
+    }
+
+public:
+    BinHeap() : currentSize(0) {
+        heapvector.push_back(T());  // Dummy element at index 0 for easier indexing
+    }
+
+    void insert(const T& item) {
+        if (currentSize + 1 >= heapvector.size()) {
+            heapvector.push_back(item);
+        } else {
+            heapvector[currentSize + 1] = item;
+        }
+        currentSize++;
+        percUp(currentSize);
+    }
+
+    T delMin() {
+        if (isEmpty()) {
+            throw std::underflow_error("Heap is empty");
+        }
+        T minItem = heapvector[1];
+        heapvector[1] = heapvector[currentSize];
+        heapvector.pop_back();
+        currentSize--;
+        if (!isEmpty()) {
+            percDown(1);
+        }
+        return minItem;
+    }
+
+    void buildHeap(const std::vector<T>& avector) {
+        heapvector.resize(avector.size() + 1);
+        for (int i = 0; i < avector.size(); i++) {
+            heapvector[i + 1] = avector[i];
+        }
+        currentSize = avector.size();
+        for (int i = currentSize / 2; i > 0; i--) {
+            percDown(i);
+        }
+    }
+
+    bool isEmpty() const {
+        return currentSize == 0;
+    }
+
+    T findMin() const {
+        if (isEmpty()) {
+            throw std::underflow_error("Heap is empty");
+        }
+        return heapvector[1];
+    }
+};
+
+template<typename K>
+class PriorityQueue : public BinHeap<std::pair<int, K>> {
+public:
+    void insert(int priority, const K& item) {
+        this->BinHeap<std::pair<int, K>>::insert(std::make_pair(priority, item));
+    }
+
+    std::pair<int, K> delMin() {
+        std::pair<int, K> minPair = this->BinHeap<std::pair<int, K>>::delMin();
+        return minPair;
+    }
+
+    void changePriority(const K& item, int newPriority) {
+        for (int i = 1; i <= this->currentSize; i++) {
+            if (this->heapvector[i].second == item) {
+                this->heapvector[i].first = newPriority;
+                this->percUp(i);
+                this->percDown(i);
+                break;
             }
-            else{
-                return (i * 2) + 1;
+        }
+    }
+
+    bool contains(const K& item) const {
+        for (int i = 1; i <= this->currentSize; i++) {
+            if (this->heapvector[i].second == item) {
+                return true;
             }
         }
-    }
-
-    // restores full complince with the heap structure
-    // and heap order properties after the root is removed
-    // by  taking the last item and moving it to the root position
-    // and pushing the new root node down the tree to its proper postion.
-    int delMin(){
-        int retval = this->heapvector[1];
-        this->heapvector[1] = this->heapvector[this->currentSize];
-        this->currentSize = this->currentSize - 1;
-        this->heapvector.pop_back();
-        this->percDown(1);
-        return retval;
-    }
-
-    void buildheap(vector<int> avector){
-        int i = avector.size() / 2;
-        this->currentSize = avector.size();
-        this->heapvector.insert(this->heapvector.end(), avector.begin(), avector.end());
-        while (i > 0){
-            this->percDown(i);
-            i = i - 1;
-        }
-    }
-
-    bool isEmpty(){
-        if (this->heapvector.size()>0){
-            return false;
-        }
-        return true;
-    }
-
-    int findMin(){
-        return this->heapvector[1];
+        return false;
     }
 };
