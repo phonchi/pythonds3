@@ -96,8 +96,20 @@ class Vertex:
 
     closing_time = property(get_closing_time, set_closing_time)
 
+    def __repr__(self) -> str:
+        """Represent the vertex as 'Vertex{key}'"""
+        return f"Vertex{self._key}"
+        
     def __str__(self) -> str:
-        return f"{self._key:^8}|{self._color:^8}|{self._distance:^8}|{self._discovery_time:^8}|{self._closing_time:^8}| {self._previous}"
+        # Ensure all values are suitable for string formatting
+        key = str(self._key)
+        color = str(self._color)
+        distance = str(self._distance) if self._distance != sys.maxsize else 'inf'
+        discovery_time = str(self._discovery_time)
+        closing_time = str(self._closing_time)
+        previous_key = str(getattr(self._previous, '_key', 'None'))
+        
+        return f"{key:^8}|{color:^8}|{distance:^8}|{discovery_time:^8}|{closing_time:^8}|{previous_key}"
 
 
 class Graph:
