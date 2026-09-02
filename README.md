@@ -49,3 +49,42 @@ The package is a supplement to [Problem Solving with Algorithms and Data Structu
 - Dijkstra's shortest path algorithm
 - Bellman-Ford shortest path algorithm
 - Prim's spanning tree algorithm
+
+## C++ headers for NSYSU MATH208 (`cppds/*.hpp`)
+
+The header-only C++ implementations used by the NSYSU MATH208 lecture notebooks
+live directly in `cppds/`. Clone this repository next to your notebooks (i.e. in
+the directory where you start `jupyter lab`):
+
+```
+git clone https://github.com/phonchi/pythonds3
+```
+
+Your working directory then looks like:
+
+```
+.
+├── 05_Linear_Structure.ipynb
+└── pythonds3/
+    └── cppds/
+        ├── stack.hpp
+        └── ...
+```
+
+Include them with the full path and compile with `-I.` (the notebook C++17
+kernel already does this):
+
+```cpp
+#include "pythonds3/cppds/stack.hpp"
+```
+
+```
+g++ -std=c++17 -I. main.cpp -o main
+```
+
+Available headers:
+
+`anagram.hpp`, `arraylist.hpp`, `binaryheap.hpp`, `binarytree.hpp`, `bst.hpp`,
+`deque.hpp`, `dstimer.hpp`, `expression.hpp`, `fraction.hpp`, `gates.hpp`,
+`graph.hpp`, `graph_algos.hpp`, `hashtable.hpp`, `linked_list.hpp`, `maze.hpp`,
+`queue.hpp`, `searching.hpp`, `sorting.hpp`, `sparsematrix.hpp`, `stack.hpp`
