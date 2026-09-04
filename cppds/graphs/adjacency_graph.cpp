@@ -145,7 +145,7 @@ public:
      * Args:
      *     directed (bool): Specifies whether the graph is directed, default is true.
      */
-    Graph(bool directed = true) : directional(directed), numVertices(0) {}
+    Graph(bool directed = true) : numVertices(0), directional(directed) {}
 
     /**
      * Adds a vertex to the graph by key, initializing it if it doesn't exist.
@@ -263,6 +263,8 @@ public:
  * Returns:
  *     Graph: A graph where each word is a vertex and edges connect words differing by one letter.
  */
+string getBlank(string str, int index);
+
 Graph buildGraph(vector<string> words) {
     Graph g(false); // Build an undirected graph
 
@@ -430,7 +432,7 @@ public:
         visitedList.push_back(vertex.first);
         std::cout << "Visited Vertex With ID#: " << vertex.first << std::endl;
 
-        for (int neighborID : vertex.second.second) {
+        for (int neighborID : vertex.second) {
             if (std::find(visitedList.begin(), visitedList.end(), neighborID) == visitedList.end()) {
                 dfsvisit(visitedList, vertices[neighborID]);
             }
