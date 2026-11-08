@@ -88,3 +88,8 @@ Available headers:
 `deque.hpp`, `dstimer.hpp`, `expression.hpp`, `fraction.hpp`, `gates.hpp`,
 `graph.hpp`, `graph_algos.hpp`, `hashtable.hpp`, `linked_list.hpp`, `maze.hpp`,
 `queue.hpp`, `searching.hpp`, `sorting.hpp`, `sparsematrix.hpp`, `stack.hpp`
+
+`maze.hpp` (Chapter 6) matches the course C++ kernel (1.0.0a9.post5). Its optional
+GUI uses `cppds/detail/` (window code, bundled CTurtle/CImg, and the Snorlax/Pikachu
+turtle shapes selected with `setShape()`); `cppds/data/maze2.txt` is the sample maze
+used when no local `maze2.txt` exists. Keep these folders together with `maze.hpp`.
