@@ -89,7 +89,15 @@ Available headers:
 `graph.hpp`, `graph_algos.hpp`, `hashtable.hpp`, `linked_list.hpp`, `maze.hpp`,
 `queue.hpp`, `searching.hpp`, `sorting.hpp`, `sparsematrix.hpp`, `stack.hpp`
 
-`maze.hpp` (Chapter 6) matches the course C++ kernel (1.0.0a9.post5). Its optional
+`maze.hpp` (Chapter 6) matches the course C++ kernel (1.0.0a9.post6). Its optional
 GUI uses `cppds/detail/` (window code, bundled CTurtle/CImg, and the Snorlax/Pikachu
 turtle shapes selected with `setShape()`); `cppds/data/maze2.txt` is the sample maze
 used when no local `maze2.txt` exists. Keep these folders together with `maze.hpp`.
+
+`sorting.hpp` (Chapter 7) prints every pass so the lectures can show each step.
+Set `sortingTrace = false;` (for example at the start of `main`) to silence it,
+as HW4 does for its benchmarks.
+
+Only the headers in `cppds/` are used by the course and the homework. The older
+2024 `.cpp` implementations (e.g. `basic/stack.cpp`, `sorting/sorting_algorithms.cpp`)
+were moved to [`deprecated/cppds-2024/`](deprecated/cppds-2024); do not use them.
